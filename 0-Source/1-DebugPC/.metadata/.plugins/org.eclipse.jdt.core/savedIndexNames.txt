@@ -1,0 +1,9 @@
+INDEX VERSION 1.131+E:\Source\F1shy\0-Source\1-DebugPC\.metadata\.plugins\org.eclipse.jdt.core
+1080970807.index
+3749129065.index
+1418627942.index
+870575895.index
+1886084572.index
+1724243008.index
+4276296955.index
+1105476580.index

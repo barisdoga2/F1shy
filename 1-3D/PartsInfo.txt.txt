@@ -1,0 +1,57 @@
++Engine
+	-Print			13g		T: 1h 17m		S:0.28mm / 1.2mm Wall Tickness / %20 Infill							2g error
+	-Case			6g
+	-12vDC 			9g
+	-Propeller		52g		T: 8h 17m		S:0.28mm / 1.2mm Wall Tickness / %100 Infill / Supports 45
+	*TOTAL			=79g
+	
++Peristaltic
+	-Print			87g		T: 9h 58m		S:0.28mm / 1.2mm Wall Tickness / %20 Infill / Supports 45			13g error
+	-Pump			91g
+	*TOTAL			=201g
+
++Sensor
+	-Print			146g	T: 13h 37m		S:0.28mm / 1.2mm Wall Tickness / %20 Infill / Supports 45
+	-GPS			20g
+	-IMU			3g
+	*TOTAL			=169g
+	
++Free
+	-Print			227g	T: 8h 7m		S:0.28mm / 1.2mm Wall Tickness / %20 Infill
+	-PB				1250g
+	-PressureSensor	66g
+	*TOTAL			=1543g	
+	
++Power
+	-Print			208g	T: 16h 30m		S:0.28mm / 1.2mm Wall Tickness / %20 Infill
+	-18650 x6		47x6=282g
+	-Regulator		12g
+	-Current		3g
+	*TOTAL			=505g
+	
++Flap
+	-Print			130g	T: 11h 22m		S:0.28mm / 1.2mm Wall Tickness / %20 Infill / Supports 45
+	-Servo x2		35x2=70g
+	*TOTAL			=200g
+
++Microcontrollers
+	-Print			324g	T: 1d 2h 51m	S:0.28mm / 1.2mm Wall Tickness / %20 Infill
+	-Arduino		32g
+	-Raspberry		42g
+	*TOTAL			=398g
+
++Head
+	-Print			96g		T: 8h 35m		S:0.28mm / 1.2mm Wall Tickness / %20 Infill / Supports 45
+	-Camera			4g
+	*TOTAL			=100g
+
++Tij
+	-Tij			2700mm / 460g
+
+Total Weight: 3660gr
+
+Water Capacity: 832cm^3 ~= 832g
+
+
+Ship Volume: 4555cm^3
+Max Weight:  ~4500g

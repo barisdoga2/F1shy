@@ -1,0 +1,88 @@
+#include "MotorDriver.h"
+
+const int stepCount = 8;
+const int stepSequences[8][4] = {{0,1,0,0},
+                                 {0,1,0,1},
+                                 {0,0,0,1},
+                                 {1,0,0,1},
+                                 {1,0,0,0},
+                                 {1,0,1,0},
+                                 {0,0,1,0},
+                                 {0,1,1,0}};
+
+StepMotor leftFlap = {0, 0, 0, 0, 0, 0}; 
+StepMotor rightFlap = {0, 0, 0, 0, 0, 0}; 
+DCMotor propellerMotor = {STOPPED, 0, 0, 0};
+DCMotor pumpMotor = {STOPPED, 0, 0, 0};
+
+void InitMotorDriver(){
+    pinMode(leftFlap.cA1, OUTPUT);
+    pinMode(leftFlap.cA2, OUTPUT);
+    pinMode(leftFlap.cB1, OUTPUT);
+    pinMode(leftFlap.cB2, OUTPUT);
+
+    pinMode(rightFlap.cA1, OUTPUT);
+    pinMode(rightFlap.cA2, OUTPUT);
+    pinMode(rightFlap.cB1, OUTPUT);
+    pinMode(rightFlap.cB2, OUTPUT);
+
+    pinMode(propellerMotor.p1, OUTPUT);
+    pinMode(propellerMotor.p2, OUTPUT);
+
+    pinMode(pumpMotor.p1, OUTPUT);
+    pinMode(pumpMotor.p2, OUTPUT);
+}
+
+void UpdateMotorDriver(){
+    
+}
+
+// Steppers
+void ResetToDelta(Step step){
+    StepMotor stepper = step == LEFT_FLAP ? leftFlap : rightFlap;
+    stepper.degrees = 0;
+}
+
+void Turn(Step step, int degrees){
+    int backwards = degrees < 0;
+    StepMotor stepper = step == LEFT_FLAP ? leftFlap : rightFlap;
+
+    for(int x = 0 ; x < abs(degrees) ; x++){
+        for(int j = 0 ; j < stepCount ; j++){
+            int seq[4] = stepSequences[backwards > 0 ? 8 - j - 1 : j];
+            digitalWrite(stepper.cA1, seq[0]);
+            digitalWrite(stepper.cA2, seq[1]);
+            digitalWrite(stepper.cB1, seq[2]);
+            digitalWrite(stepper.cB2, seq[3]);
+            usleep(0.1 * 1000);
+        }
+    }
+}
+
+// DC Motors
+void Start(Motor motor, Direction dir){
+    DCMotor dcMotor = motor == PROPELLER_MOTOR ? propellerMotor : pumpMotor;
+    dcMotor.startTime = getCurrentMillis();
+    dcMotor.direction = dir;
+
+    if(dir == TURNING_LEFT){
+        digitalWrite(dcMotor.p1, HIGH);
+        digitalWrite(dcMotor.p1, LOW);
+    }else if(dir == TURNING_RIGHT){
+        digitalWrite(dcMotor.p1, LOW);
+        digitalWrite(dcMotor.p1, HIGH);
+    }
+}
+
+void Stop(Motor motor){
+    DCMotor dcMotor = motor == PROPELLER_MOTOR ? propellerMotor : pumpMotor;
+    dcMotor.dir = 0;
+
+    digitalWrite(dcMotor.p1, LOW);
+    digitalWrite(dcMotor.p1, LOW);
+}
+
+long long TimeRunning(Motor motor){
+    DCMotor dcMotor = motor == PROPELLER_MOTOR ? propellerMotor : pumpMotor;
+    return getCurrentMillis() - dcMotor.startTime;
+}
