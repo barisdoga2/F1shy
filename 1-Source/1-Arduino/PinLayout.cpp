@@ -14,7 +14,7 @@ Pin PinLayout::pinMap[NUMBER_OF_PINS_USED] = {
     {VOLTAGE_SENS,      INPUT,    LOW},
     {PRESSURE_SENS,     INPUT,    LOW},
     {LEAK_SENS,         INPUT,    LOW},
-    {TEMPERATURE_SENS,  INPUT,    LOW},
+    {DHT11_SENS,        INPUT,    LOW},
 };
 
 void PinLayout::Init()

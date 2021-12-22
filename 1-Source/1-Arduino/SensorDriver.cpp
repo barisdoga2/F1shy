@@ -1,8 +1,9 @@
 #include "SensorDriver.h"
 
 long SensorDriver::lastCheck = 0;
-
+dht11 SensorDriver::dht_sensor;
 float SensorDriver::temperature = 0;
+float SensorDriver::humidity = 0;
 bool SensorDriver::leakage = 0;
 float SensorDriver::voltage = 0;
 float SensorDriver::waterPressure = 0;
@@ -19,7 +20,7 @@ void SensorDriver::Update()
     {
         lastCheck = now;
 
-        ReadTemperature();
+        ReadDHT11();
         ReadLeakage();
         ReadVoltage();
         ReadWaterPressure();
@@ -27,10 +28,12 @@ void SensorDriver::Update()
     
 }
 
-void SensorDriver::ReadTemperature()
+void SensorDriver::ReadDHT11()
 {
-    float mv = (analogRead(TEMPERATURE_SENS)/1024.0)*5000.0;
-    temperature = mv/10;
+    int chk = dht_sensor.read(A3);
+ 
+    humidity = (float)dht_sensor.humidity;
+    temperature = (float)dht_sensor.temperature;
 }
 
 void SensorDriver::ReadLeakage()

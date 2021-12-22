@@ -10,7 +10,7 @@
 #define VOLTAGE_SENS A1
 #define PRESSURE_SENS A2
 #define LEAK_SENS A6
-#define TEMPERATURE_SENS A7
+#define DHT11_SENS A3
 #define ENGINE_EN 3
 #define ENGINE_IN1 2
 #define ENGINE_IN2 7
