@@ -5,7 +5,7 @@
 #include "EngineDriver.h"
 #include "PumpDriver.h"
 #include "SensorDriver.h"
-#include "IMU.h"
+//#include "IMU.h"
 
 
 void setup()
@@ -18,7 +18,7 @@ void setup()
   EngineDriver::Init();
   PumpDriver::Init();
   SensorDriver::Init();
-  InitIMU();
+  //InitIMU();
 }
 
 void loop()
@@ -48,11 +48,11 @@ void loop()
       EngineDriver::SetTargetPower(0);
     }else if(c == 'd')
     {      
-      PumpDriver::PumpMilliliters(10);
+      PumpDriver::PumpMilliliters(5);
     }else if(c == 'f')
     {      
-      PumpDriver::PumpMilliliters(-10);
+      PumpDriver::PumpMilliliters(-5);
     }
   }
-  UpdateIMU();
+  //UpdateIMU();
 }

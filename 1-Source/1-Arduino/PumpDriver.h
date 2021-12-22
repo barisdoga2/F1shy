@@ -2,8 +2,7 @@
 #define PumpDriver_H
 
 #define PUMP_SPEED 255
-#define MILLILITERS_PER_MIN 100
-#define MILLILITERS_PER_MS (double)100 / ((double)60 * (double)1000)
+#define MILLILITERS_PER_MIN 84
 
 #include "Arduino.h"
 #include "Types.h"

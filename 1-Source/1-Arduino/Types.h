@@ -39,7 +39,7 @@ typedef struct PumpMotor
     int motor_pin_enable;
 
     bool isPumping;
-    long endTime;
+    unsigned long endTime;
 };
 
 

@@ -1,7 +1,7 @@
 #include "Arduino.h"
 #include "PumpDriver.h"
 
-const double PumpDriver::milliliters_per_ms = (double)100 / ((double)60 * (double)1000);
+const double PumpDriver::milliliters_per_ms = (double)MILLILITERS_PER_MIN / ((double)60 * (double)1000);
 PumpMotor* PumpDriver::pump;
 
 void PumpDriver::Init()
@@ -13,16 +13,20 @@ void PumpDriver::Update()
 {
     if(pump->isPumping == 1)
     {
-        long now = millis();
+        unsigned long now = micros();
         
         if(pump->endTime <= now)
         {
             analogWrite(pump->motor_pin_enable, LOW);
             pump->isPumping = 0;
-            Serial.print("Pump Error in ms: ");
+            Serial.print("Pump Error in micros: ");
             Serial.print(now - pump->endTime);
             Serial.print(", Pump Error in ml: ");
             Serial.println((now - pump->endTime) * milliliters_per_ms, 6);
+        }else if(pump->endTime - now < 100)
+        {
+            delayMicroseconds(pump->endTime - micros());
+            PumpDriver::Update();
         }
     }
 }
@@ -40,9 +44,9 @@ void PumpDriver::PumpMilliliters(int milliliters)
             digitalWrite(pump->motor_pin_2, LOW);
         }
 
-        long needed_ms = (long)abs(milliliters) / milliliters_per_ms;
-
-        pump->endTime = millis() + needed_ms;
+        unsigned long needed_ms = (long)abs(milliliters) / (milliliters_per_ms / 1000);
+        
+        pump->endTime = micros() + needed_ms;
         analogWrite(pump->motor_pin_enable, PUMP_SPEED);
         pump->isPumping = 1;
     }
