@@ -6,20 +6,7 @@ StepperMotor* StepperDriver::pump;
 
 int StepperDriver::HC595Registers[8] = {LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW};
 
-ISR(TIMER1_COMPA_vect)
-{
-    StepperDriver::Step(StepperDriver::flap);
-    StepperDriver::Step(StepperDriver::pump);
-    
-    StepperDriver::WriteHC595Registers();
 
-    // If there is nothing left to do, we can stop the interrupt
-    if(StepperDriver::flap->steps_left == 0 && StepperDriver::pump->steps_left == 0)
-    {
-        StepperDriver::WriteHC595Registers(true);
-        StepperDriver::DisableInterrupts();
-    }
-}
 
 void StepperDriver::Init()
 {
@@ -34,15 +21,30 @@ void StepperDriver::Init()
     WriteHC595Registers(true);    
 }
 
-void StepperDriver::TurnSteps(StepperMotor* stepper, int step_count)
+bool StepperDriver::OnISR()
 {
-    stepper->steps_left += step_count;
-    
-    // If something to do, we can enable the interrupt.
-    if(stepper->steps_left != 0)
+    Step(flap);
+    Step(pump);
+    WriteHC595Registers();
+    // If there is nothing left to do, we can stop the interrupt
+    if(flap->steps_left == 0 && pump->steps_left == 0)
     {
-        EnableInterrupts();
+        WriteHC595Registers(true);
+        return true;
     }
+    return false;
+}
+
+bool StepperDriver::TurnSteps(StepperMotor* stepper, int step_count)
+{
+    bool retVal = false;
+    if(step_count != 0)
+    {
+        retVal = ISRHandler::EnableInterrupt(STEP_DELAY_MS, OnISR);
+        if(retVal)
+            stepper->steps_left += step_count;
+    }
+    return retVal;
 }
 
 void StepperDriver::Step(StepperMotor* stepper)
@@ -109,7 +111,7 @@ void StepperDriver::StepMotor(StepperMotor* stepper, int thisStep)
     }
 }
 
-void StepperDriver::WriteHC595Registers(bool clear = false)
+void StepperDriver::WriteHC595Registers(bool clear)
 {
     digitalWrite(HC595_LATCH, LOW);
     for(int i = 7 ; i >=  0; i--)
@@ -122,29 +124,4 @@ void StepperDriver::WriteHC595Registers(bool clear = false)
 
     }
     digitalWrite(HC595_LATCH, HIGH);
-}
-
-void StepperDriver::EnableInterrupts()
-{
-    cli();
-    TCCR1A = 0;
-    TCCR1B = 0;
-    TCNT1  = 0;
-    TIMSK1 = 0;
-    OCR1A = CMR;
-    TCCR1B |= (1 << WGM12);
-    if(1024 == PRESCALER)
-        TCCR1B |= (1 << CS12) | (1 << CS10);
-    TIMSK1 |= (1 << OCIE1A);
-    sei();
-}
-
-void StepperDriver::DisableInterrupts()
-{
-    cli();
-    TCCR1A = 0;
-    TCNT1 = 0;
-    TIMSK1 = 0;
-    TIMSK1 |= (0 << OCIE1A);
-    sei();
 }

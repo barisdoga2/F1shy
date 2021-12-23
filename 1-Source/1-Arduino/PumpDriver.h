@@ -7,6 +7,8 @@
 #include "Arduino.h"
 #include "Types.h"
 #include "PinLayout.h"
+#include "ISRHandler.h"
+
 
 
 
@@ -15,8 +17,10 @@ class PumpDriver
 
 public:
     static void Init();
-    static void Update();
-    static void PumpMilliliters(int milliliters);
+    static bool OnISR();
+    static bool PumpMilliliters(int milliliters); // ISR Support Up to 5ml
+
+    static bool isPumping;
 
 private: 
     static PumpMotor* pump;

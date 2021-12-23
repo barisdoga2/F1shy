@@ -1,13 +1,13 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-typedef struct Pin{
+struct Pin{
     int pinNumber;
     int mode;
     int state;
-} Pin;
+};
 
-typedef struct StepperMotor
+struct StepperMotor
 {
     int motor_pin_1;
     int motor_pin_2;
@@ -19,7 +19,7 @@ typedef struct StepperMotor
     int steps_left;
 };
 
-typedef struct EngineMotor
+struct EngineMotor
 {
     int motor_pin_1;
     int motor_pin_2;
@@ -32,14 +32,11 @@ typedef struct EngineMotor
     long lastAcceleration;
 };
 
-typedef struct PumpMotor
+struct PumpMotor
 {
     int motor_pin_1;
     int motor_pin_2;
     int motor_pin_enable;
-
-    bool isPumping;
-    unsigned long endTime;
 };
 
 

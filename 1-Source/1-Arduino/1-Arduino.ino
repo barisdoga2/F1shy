@@ -5,6 +5,7 @@
 #include "EngineDriver.h"
 #include "PumpDriver.h"
 #include "SensorDriver.h"
+#include "ISRHandler.h"
 //#include "IMU.h"
 
 
@@ -13,6 +14,7 @@ void setup()
   Serial.begin(9600);
   Serial.println("Welcome!");
 
+  ISRHandler::EnableInterrupt(0, 0x0); // Because of weird interrupt bug
   PinLayout::Init();
   StepperDriver::Init();
   EngineDriver::Init();
@@ -24,7 +26,6 @@ void setup()
 void loop()
 {
   EngineDriver::Update();
-  PumpDriver::Update();
   SensorDriver::Update();
 
   if(Serial.available() > 0){
@@ -32,10 +33,8 @@ void loop()
     if(c == '+')
     {
       StepperDriver::TurnSteps(StepperDriver::pump, 2048);
-      StepperDriver::TurnSteps(StepperDriver::flap, 2048);
     }else if(c == '-')
     {      
-      StepperDriver::TurnSteps(StepperDriver::pump, -2048);
       StepperDriver::TurnSteps(StepperDriver::flap, -2048);
     }else if(c == 'a')
     {      
@@ -48,10 +47,10 @@ void loop()
       EngineDriver::SetTargetPower(0);
     }else if(c == 'd')
     {      
-      PumpDriver::PumpMilliliters(5);
+      PumpDriver::PumpMilliliters(2);
     }else if(c == 'f')
     {      
-      PumpDriver::PumpMilliliters(-5);
+      PumpDriver::PumpMilliliters(-2);
     }
   }
   //UpdateIMU();
