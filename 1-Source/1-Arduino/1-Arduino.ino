@@ -14,7 +14,6 @@ void setup()
   Serial.begin(9600);
   Serial.println("Welcome!");
 
-  ISRHandler::EnableInterrupt(0, 0x0); // Because of weird interrupt bug
   PinLayout::Init();
   StepperDriver::Init();
   EngineDriver::Init();
@@ -30,27 +29,37 @@ void loop()
 
   if(Serial.available() > 0){
     char c = (char)Serial.read();
+    bool retVal = false;
     if(c == '+')
     {
-      StepperDriver::TurnSteps(StepperDriver::pump, 2048);
+      retVal = StepperDriver::TurnSteps(StepperDriver::pump, 2048);
     }else if(c == '-')
     {      
-      StepperDriver::TurnSteps(StepperDriver::flap, -2048);
+      retVal = StepperDriver::TurnSteps(StepperDriver::flap, -2048);
     }else if(c == 'a')
     {      
+      retVal = 1;
       EngineDriver::SetTargetPower(255);
     }else if(c == 'b')
     {      
+      retVal = 1;
       EngineDriver::SetTargetPower(-255);
     }else if(c == 'c')
     {      
+      retVal = 1;
       EngineDriver::SetTargetPower(0);
     }else if(c == 'd')
     {      
-      PumpDriver::PumpMilliliters(2);
+      retVal = PumpDriver::PumpMilliliters(2);
     }else if(c == 'f')
     {      
-      PumpDriver::PumpMilliliters(-2);
+      retVal = PumpDriver::PumpMilliliters(-2);
+    }
+    
+    if(c != '\n')
+    {
+      Serial.print("Command Returned: ");
+      Serial.println(retVal);
     }
   }
   //UpdateIMU();

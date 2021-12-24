@@ -6,17 +6,11 @@ OnISR_cbk ISRHandler::OnISR = 0x0;
 
 ISR(TIMER1_COMPA_vect)
 {
-    if(ISRHandler::OnISR == 0x0){
-        
-        ISRHandler::DisableInterrupt();
-
-    }else
+    bool ret = ISRHandler::OnISR();
+    if(ret == true)
     {
-        bool ret = ISRHandler::OnISR();
-        if(ret == true)
-        {
-            ISRHandler::OnISR = 0x0;
-        }
+        ISRHandler::DisableInterrupt();
+        ISRHandler::OnISR = 0x0;
     }
 }
 
@@ -36,6 +30,7 @@ bool ISRHandler::EnableInterrupt(double milliseconds_period, OnISR_cbk OnISR_fun
     TCNT1  = 0;
     TIMSK1 = 0;
     OCR1A = cmr;
+    TIFR1 = (1<<OCF1A);
     TCCR1B |= (1 << WGM12);
     TCCR1B |= (1 << CS12) | (1 << CS10);
     TIMSK1 |= (1 << OCIE1A);
