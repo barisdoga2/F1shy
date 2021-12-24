@@ -18,7 +18,9 @@
 #define PUMP_IN1 5
 #define PUMP_IN2 4
 #define LED 11
-#define NUMBER_OF_PINS_USED 14
+#define PUMP_ACT_R_SENS 0
+#define PUMP_ACT_H_SENS 0
+#define NUMBER_OF_PINS_USED 16
 
 // Virtual 74HC595 Register Indexes
 #define STEPPER_1_1 7

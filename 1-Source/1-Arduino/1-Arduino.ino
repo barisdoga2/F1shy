@@ -22,44 +22,58 @@ void setup()
   //InitIMU();
 }
 
+char serialCommandBuff[100];
+int commandLen = 0;
+bool processSerialCommand()
+{
+
+  bool retVal = false;
+  if(strncmp(&serialCommandBuff[0], "pa", 2) == 0)
+  {    
+    if(strncmp(&serialCommandBuff[2], "1", 1) == 0)
+      retVal = StepperDriver::TurnPumpActuator(REAR_WATER_TANK);
+    else if(strncmp(&serialCommandBuff[2], "-1", 2) == 0)
+      retVal = StepperDriver::TurnPumpActuator(HEAD_WATER_TANK);
+  }
+  else if(strncmp(&serialCommandBuff[0], "f", 1) == 0)
+  {
+    retVal = StepperDriver::TurnFlap(atoi(&serialCommandBuff[1]));
+  }else if(strncmp(&serialCommandBuff[0], "e", 1) == 0)
+  {
+    EngineDriver::SetTargetPower(atoi(&serialCommandBuff[1]));
+    retVal = true;
+  }
+  else if(strncmp(&serialCommandBuff[0], "p", 1) == 0)
+  {
+    retVal = PumpDriver::PumpMilliliters(atoi(&serialCommandBuff[1]));
+  }else if(strncmp(&serialCommandBuff[0], "s", 1) == 0)
+  {
+    SensorDriver::PrintAll();
+    retVal = true;
+  }
+
+  return retVal;
+}
+
 void loop()
 {
   EngineDriver::Update();
   SensorDriver::Update();
 
-  if(Serial.available() > 0){
+  while(Serial.available() > 0)
+  {
     char c = (char)Serial.read();
-    bool retVal = false;
-    if(c == '+')
+    serialCommandBuff[commandLen++] = c;
+    if(serialCommandBuff[commandLen - 1] == '\n')
     {
-      retVal = StepperDriver::TurnSteps(StepperDriver::pump, 2048);
-    }else if(c == '-')
-    {      
-      retVal = StepperDriver::TurnSteps(StepperDriver::flap, -2048);
-    }else if(c == 'a')
-    {      
-      retVal = 1;
-      EngineDriver::SetTargetPower(255);
-    }else if(c == 'b')
-    {      
-      retVal = 1;
-      EngineDriver::SetTargetPower(-255);
-    }else if(c == 'c')
-    {      
-      retVal = 1;
-      EngineDriver::SetTargetPower(0);
-    }else if(c == 'd')
-    {      
-      retVal = PumpDriver::PumpMilliliters(2);
-    }else if(c == 'f')
-    {      
-      retVal = PumpDriver::PumpMilliliters(-2);
-    }
-    
-    if(c != '\n')
-    {
-      Serial.print("Command Returned: ");
-      Serial.println(retVal);
+      serialCommandBuff[commandLen - 1] = '\0';
+      bool retVal = processSerialCommand();
+      Serial.print("Command: '");
+      Serial.print(serialCommandBuff);
+      Serial.print("' Return: '");
+      Serial.print(retVal);
+      Serial.println("'");
+      commandLen = 0;
     }
   }
   //UpdateIMU();

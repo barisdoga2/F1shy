@@ -53,3 +53,17 @@ void SensorDriver::ReadWaterPressure()
     int val = analogRead(PRESSURE_SENS);
     waterPressure = val;
 }
+
+void SensorDriver::PrintAll()
+{
+    Serial.print("Temperature: ");
+    Serial.print(temperature);
+    Serial.print(", Humidity: ");
+    Serial.print(humidity);
+    Serial.print(", Leakage: ");
+    Serial.print(leakage);
+    Serial.print(", Voltage: ");
+    Serial.print(voltage);
+    Serial.print(", WaterPressure: ");
+    Serial.println(waterPressure);
+}

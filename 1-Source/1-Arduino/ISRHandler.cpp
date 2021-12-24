@@ -10,11 +10,10 @@ ISR(TIMER1_COMPA_vect)
     if(ret == true)
     {
         ISRHandler::DisableInterrupt();
-        ISRHandler::OnISR = 0x0;
     }
 }
 
-bool ISRHandler::EnableInterrupt(double milliseconds_period, OnISR_cbk OnISR_func_ptr) //[TODO] Very first interrupt called and finished immediately after sei(); call. Weird bug.
+bool ISRHandler::EnableInterrupt(double milliseconds_period, OnISR_cbk OnISR_func_ptr)
 {
     if(OnISR != 0x0)
     {
@@ -42,6 +41,7 @@ bool ISRHandler::EnableInterrupt(double milliseconds_period, OnISR_cbk OnISR_fun
 void ISRHandler::DisableInterrupt()
 {
     cli();
+    ISRHandler::OnISR = 0x0;
     TCCR1A = 0;
     TCCR1B = 0;
     TCNT1 = 0;

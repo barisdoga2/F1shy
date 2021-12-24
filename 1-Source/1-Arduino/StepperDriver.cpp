@@ -2,7 +2,7 @@
 #include "StepperDriver.h"
 
 StepperMotor* StepperDriver::flap;
-StepperMotor* StepperDriver::pump;
+StepperMotor* StepperDriver::pumpActuator;
 
 int StepperDriver::HC595Registers[8] = {LOW, LOW, LOW, LOW, LOW, LOW, LOW, LOW};
 
@@ -12,38 +12,75 @@ void StepperDriver::Init()
 {
     // Initialize Steppers
     flap = new StepperMotor{STEPPER_1_1, STEPPER_1_2, STEPPER_1_3, STEPPER_1_4};
-    pump = new StepperMotor{STEPPER_2_1, STEPPER_2_2, STEPPER_2_3, STEPPER_2_4};
+    pumpActuator = new StepperMotor{STEPPER_2_1, STEPPER_2_2, STEPPER_2_3, STEPPER_2_4};
+    StepMotor(pumpActuator, 0); // Pump Actuator must be locked.
     
-    // [TODO] Without this stepper motors does not work, investigate.
-    pinMode(NOT_A_PIN, OUTPUT); 
+    pinMode(NOT_A_PIN, OUTPUT); // [TODO] Without this stepper motors does not work, investigate.
     
     // Clear HC595 Registers
-    WriteHC595Registers(true);    
+    WriteHC595Registers();    
 }
 
-bool StepperDriver::OnISR()
-{
-    Step(flap);
-    Step(pump);
-    WriteHC595Registers();
-    // If there is nothing left to do, we can stop the interrupt
-    if(flap->steps_left == 0 && pump->steps_left == 0)
-    {
-        WriteHC595Registers(true);
-        return true;
-    }
-    return false;
-}
-
-bool StepperDriver::TurnSteps(StepperMotor* stepper, int step_count)
+bool StepperDriver::PumpActuatorOnISR()
 {
     bool retVal = false;
-    if(step_count != 0)
+
+    Step(pumpActuator);
+    WriteHC595Registers();
+
+    int sensorVal = pumpActuator->steps_left == 0;
+    //int sensorVal = digitalRead(pumpActuator->target == REAR_WATER_TANK ? PUMP_ACT_R_SENS : PUMP_ACT_H_SENS);  //[TODO] Activate sensor mechanism first
+    if(sensorVal == 1)
     {
-        retVal = ISRHandler::EnableInterrupt(STEP_DELAY_MS, OnISR);
-        if(retVal)
-            stepper->steps_left += step_count;
+        pumpActuator->steps_left = 0;
+        retVal = true;
     }
+
+    return retVal;
+}
+
+bool StepperDriver::FlapOnISR()
+{
+    bool retVal = false;
+
+    Step(flap);
+    WriteHC595Registers();
+
+    retVal = flap->steps_left == 0;
+    if(retVal)
+    {
+        StepMotor(flap, 4);//Only unlock flap stepper.
+        WriteHC595Registers();
+    }
+    return retVal;
+}
+
+bool StepperDriver::TurnFlap(int number_of_steps)
+{
+    bool retVal = false;
+    if(number_of_steps != 0)
+    {
+        retVal = ISRHandler::EnableInterrupt(STEP_DELAY_MS, FlapOnISR);
+        if(retVal)
+        {
+            flap->steps_left = number_of_steps;
+        }
+    }
+    return retVal;
+}
+
+bool StepperDriver::TurnPumpActuator(PumpActuatorTarget targetTank)
+{
+    bool retVal = false;
+
+    retVal = ISRHandler::EnableInterrupt(STEP_DELAY_MS, PumpActuatorOnISR);
+    if(retVal)
+    {
+        pumpActuator->steps_left = targetTank * 1233;
+        //pumpActuator->steps_left = targetTank * 1233; //[TODO] Activate sensor mechanism first
+        pumpActuator->target = targetTank;
+    }
+
     return retVal;
 }
 
@@ -111,13 +148,11 @@ void StepperDriver::StepMotor(StepperMotor* stepper, int thisStep)
     }
 }
 
-void StepperDriver::WriteHC595Registers(bool clear)
+void StepperDriver::WriteHC595Registers()
 {
     digitalWrite(HC595_LATCH, LOW);
     for(int i = 7 ; i >=  0; i--)
     {
-        if(clear == 1)
-            HC595Registers[i] = LOW;
         digitalWrite(HC595_CLOCK, LOW);
         digitalWrite(HC595_DATA, HC595Registers[i]);
         digitalWrite(HC595_CLOCK, HIGH);

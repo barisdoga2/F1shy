@@ -1,6 +1,14 @@
 #ifndef TYPES_H
 #define TYPES_H
 
+#define UINT_MAX 32767
+
+enum PumpActuatorTarget
+{
+    REAR_WATER_TANK = -1,
+    HEAD_WATER_TANK = 1
+};
+
 struct Pin{
     int pinNumber;
     int mode;
@@ -17,6 +25,7 @@ struct StepperMotor
     int direction;
     int current_step_number;
     int steps_left;
+    PumpActuatorTarget target; // Only used for pump actuator
 };
 
 struct EngineMotor

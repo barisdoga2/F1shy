@@ -17,6 +17,7 @@ class SensorDriver{
 public:
     static void Init();
     static void Update();
+    static void PrintAll();
 
     static float GetTemperature() {return temperature;}
     static float GetHumidity() {return humidity;}

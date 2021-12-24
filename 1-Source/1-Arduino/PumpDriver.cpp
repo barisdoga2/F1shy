@@ -18,11 +18,11 @@ bool PumpDriver::OnISR()
 }
 
 
-bool PumpDriver::PumpMilliliters(int milliliters)
+bool PumpDriver::PumpMilliliters(int milliliters) // ISR Support Up to 5ml
 {
     bool retVal = false;
 
-    if(isPumping == 0 && milliliters != 0)
+    if(isPumping == 0 && milliliters != 0 && milliliters >= -5 && milliliters <=5)
     {
         if(milliliters < 0)
         {

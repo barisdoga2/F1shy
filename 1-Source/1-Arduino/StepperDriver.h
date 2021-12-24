@@ -14,19 +14,20 @@ class StepperDriver {
     
 public:
     static void Init();
-    static bool OnISR();
-    static bool TurnSteps(StepperMotor* stepper, int number_of_steps);
-
-    static StepperMotor* flap;
-    static StepperMotor* pump;
+    static bool FlapOnISR();
+    static bool PumpActuatorOnISR();
+    static bool TurnFlap(int number_of_steps);
+    static bool TurnPumpActuator(PumpActuatorTarget targetTank);
     
 private:
+    static StepperMotor* flap;
+    static StepperMotor* pumpActuator;
+
     static void StepMotor(StepperMotor* stepper, int this_step);
     static void Step(StepperMotor* stepper);
 
-
     static int HC595Registers[8];
-    static void WriteHC595Registers(bool clear = false);
+    static void WriteHC595Registers();
     
 };
 
