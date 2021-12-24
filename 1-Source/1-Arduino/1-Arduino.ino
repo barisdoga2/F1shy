@@ -40,8 +40,7 @@ bool processSerialCommand()
     retVal = StepperDriver::TurnFlap(atoi(&serialCommandBuff[1]));
   }else if(strncmp(&serialCommandBuff[0], "e", 1) == 0)
   {
-    EngineDriver::SetTargetPower(atoi(&serialCommandBuff[1]));
-    retVal = true;
+    retVal = EngineDriver::SetTargetPower(atoi(&serialCommandBuff[1]));
   }
   else if(strncmp(&serialCommandBuff[0], "p", 1) == 0)
   {

@@ -16,7 +16,7 @@ public:
     static void Update();
 
     static void SetAcceleration(int acceleration);
-    static void SetTargetPower(int target_power);
+    static bool SetTargetPower(int target_power);
 
 private:
     static void Accelerate();

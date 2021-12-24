@@ -29,10 +29,16 @@ void EngineDriver::SetAcceleration(int acceleration)
     engine->acceleration = acceleration;
 }
 
-void EngineDriver::SetTargetPower(int target_power)
+bool EngineDriver::SetTargetPower(int target_power)
 {
-    engine->target_power = target_power;
-    engine->lastAcceleration = millis();
+	bool retVal = false;
+	if(target_power <= 255 && target_power >= -255)
+	{
+		retVal = true;
+		engine->target_power = target_power;
+		engine->lastAcceleration = millis();
+	}
+	return retVal;
 }
 
 void EngineDriver::Accelerate()
