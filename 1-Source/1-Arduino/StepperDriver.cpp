@@ -28,8 +28,7 @@ bool StepperDriver::PumpActuatorOnISR()
     Step(pumpActuator);
     WriteHC595Registers();
 
-    int sensorVal = pumpActuator->steps_left == 0;
-    //int sensorVal = digitalRead(pumpActuator->target == REAR_WATER_TANK ? PUMP_ACT_R_SENS : PUMP_ACT_H_SENS);  //[TODO] Activate sensor mechanism first
+    int sensorVal = analogRead(pumpActuator->target == REAR_WATER_TANK ? PUMP_ACT_R_SENS : PUMP_ACT_H_SENS) > 200;
     if(sensorVal == 1)
     {
         pumpActuator->steps_left = 0;
@@ -49,7 +48,7 @@ bool StepperDriver::FlapOnISR()
     retVal = flap->steps_left == 0;
     if(retVal)
     {
-        StepMotor(flap, 4);//Only unlock flap stepper.
+        //StepMotor(flap, 4);//Only unlock flap stepper.
         WriteHC595Registers();
     }
     return retVal;

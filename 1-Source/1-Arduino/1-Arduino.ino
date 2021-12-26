@@ -8,6 +8,7 @@
 #include "ISRHandler.h"
 //#include "IMU.h"
 
+int led = 0;
 
 void setup()
 {
@@ -49,6 +50,16 @@ bool processSerialCommand()
   {
     SensorDriver::PrintAll();
     retVal = true;
+  }else if(strncmp(&serialCommandBuff[0], "l", 1) == 0)
+  {
+    led = atoi(&serialCommandBuff[1]);
+    if(led < 0 || led > 255)  
+    {
+      retVal = false;
+    }else{
+      retVal = true;
+      analogWrite(11, led);
+    }
   }
 
   return retVal;
