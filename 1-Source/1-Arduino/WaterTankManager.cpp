@@ -46,7 +46,7 @@ void WaterTankManager::Update()
     }
 }
 
-bool WaterTankManager::KillCurrentOperation(int* pumpedWater)
+bool WaterTankManager::KillCurrentOperation(int* pumpedWater) // Probably not safe to use :D
 {
     bool retVal = true;
     *pumpedWater = 0;
