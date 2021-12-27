@@ -48,7 +48,7 @@ bool StepperDriver::FlapOnISR()
     retVal = flap->steps_left == 0;
     if(retVal)
     {
-        //StepMotor(flap, 4);//Only unlock flap stepper.
+        StepMotor(flap, 4); // Only unlock flap stepper.
         WriteHC595Registers();
     }
     return retVal;
@@ -81,6 +81,11 @@ bool StepperDriver::TurnPumpActuator(PumpActuatorTarget targetTank)
     }
 
     return retVal;
+}
+
+void StepperDriver::UnlockStepper(StepperMotor* stepMotor)
+{
+    StepMotor(stepMotor, 4); // Onlock given motor
 }
 
 void StepperDriver::Step(StepperMotor* stepper)

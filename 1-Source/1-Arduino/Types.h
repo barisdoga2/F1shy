@@ -6,7 +6,8 @@
 enum PumpActuatorTarget
 {
     REAR_WATER_TANK = -1,
-    HEAD_WATER_TANK = 1
+    HEAD_WATER_TANK = 1,
+    WATER_TANK_NONE = 0
 };
 
 struct Pin{

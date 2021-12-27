@@ -14,16 +14,21 @@
 
 class PumpDriver
 {
+    friend class WaterTankManager;
 
 public:
     static void Init();
-    static bool OnISR();
     static bool PumpMilliliters(int milliliters); // ISR Support Up to 5ml
+    static bool IsPumping() {return isPumping;}
+    static int GetMillilitersMicros(long micro_secs);
+    static void StopPump();
 
-    static bool isPumping;
 
 private: 
+    static bool OnISR();
+
     static PumpMotor* pump;
+    static bool isPumping;
     static const double milliliters_per_ms;
     
 };

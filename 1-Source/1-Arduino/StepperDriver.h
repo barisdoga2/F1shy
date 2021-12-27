@@ -11,18 +11,22 @@
 
 
 class StepperDriver {
+    friend class WaterTankManager;
     
 public:
     static void Init();
-    static bool FlapOnISR();
-    static bool PumpActuatorOnISR();
+
     static bool TurnFlap(int number_of_steps);
-    static bool TurnPumpActuator(PumpActuatorTarget targetTank);
     
 private:
     static StepperMotor* flap;
     static StepperMotor* pumpActuator;
 
+    static bool FlapOnISR();
+    static bool PumpActuatorOnISR();
+    static bool TurnPumpActuator(PumpActuatorTarget targetTank);
+
+    static void UnlockStepper(StepperMotor* stepMotor);
     static void StepMotor(StepperMotor* stepper, int this_step);
     static void Step(StepperMotor* stepper);
 

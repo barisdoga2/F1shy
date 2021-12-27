@@ -15,11 +15,14 @@ class ISRHandler{
 
 public:
     static bool EnableInterrupt(double milliseconds_period, OnISR_cbk OnISR_func_ptr);
+    static long KillInterrupt(OnISR_cbk OnISR_func_ptr);
 
 private:
-    static void DisableInterrupt();
+    static long DisableInterrupt();
     friend void TIMER1_COMPA_vect(void);
     static OnISR_cbk OnISR;
+    static long isr_start;
+    static long isr_end;
 };
 
 

@@ -12,11 +12,20 @@ void PumpDriver::Init()
 
 bool PumpDriver::OnISR()
 {
-    analogWrite(PUMP_EN, 0);
-    isPumping = 0;
+    StopPump();
     return true;
 }
 
+int PumpDriver::GetMillilitersMicros(long micro_secs)
+{
+    return 0; // [TODO] too lazy atm to write this.
+} 
+
+void PumpDriver::StopPump()
+{
+    analogWrite(PUMP_EN, 0);
+    isPumping = 0;
+}
 
 bool PumpDriver::PumpMilliliters(int milliliters) // ISR Support Up to 5ml
 {
