@@ -28,12 +28,7 @@ bool StepperDriver::PumpActuatorOnISR()
     Step(pumpActuator);
     WriteHC595Registers();
 
-    int sensorVal = analogRead(pumpActuator->target == REAR_WATER_TANK ? PUMP_ACT_R_SENS : PUMP_ACT_H_SENS) > 200;
-    if(sensorVal == 1)
-    {
-        pumpActuator->steps_left = 0;
-        retVal = true;
-    }
+    retVal = pumpActuator->steps_left == 0;
 
     return retVal;
 }
@@ -75,8 +70,7 @@ bool StepperDriver::TurnPumpActuator(PumpActuatorTarget targetTank)
     retVal = ISRHandler::EnableInterrupt(STEP_DELAY_MS, PumpActuatorOnISR);
     if(retVal)
     {
-        pumpActuator->steps_left = targetTank * 1233;
-        //pumpActuator->steps_left = targetTank * 1233; //[TODO] Activate sensor mechanism first
+        pumpActuator->steps_left = targetTank * 500;
         pumpActuator->target = targetTank;
     }
 
@@ -86,6 +80,7 @@ bool StepperDriver::TurnPumpActuator(PumpActuatorTarget targetTank)
 void StepperDriver::UnlockStepper(StepperMotor* stepMotor)
 {
     StepMotor(stepMotor, 4); // Onlock given motor
+    WriteHC595Registers();
 }
 
 void StepperDriver::Step(StepperMotor* stepper)

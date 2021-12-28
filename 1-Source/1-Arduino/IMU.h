@@ -5,16 +5,7 @@
 #include "I2Cdev.h"
 #include "MPU6050_6Axis_MotionApps20.h"
 #include "Wire.h"
-
-#ifdef DEBUG_IMU
-  #define DPRINT(x) Serial.print(x)
-  #define DPRINTLN(x) Serial.println(x)
-#else
-  #define DPRINT(x)
-  #define DPRINTLN(x)
-#endif
-
-#define INTERRUPT_PIN 2
+#include "Types.h"
 
 MPU6050 mpu;
 
@@ -36,8 +27,6 @@ void dmpDataReady()
 
 int InitIMU()
 {
-    pinMode(INTERRUPT_PIN, INPUT);
-
     Wire.begin();
     Wire.setClock(400000);
 
@@ -56,15 +45,17 @@ int InitIMU()
         mpu.PrintActiveOffsets();
         mpu.setDMPEnabled(true);
 
-        digitalPinToInterrupt(INTERRUPT_PIN);
-        attachInterrupt(digitalPinToInterrupt(INTERRUPT_PIN), dmpDataReady, RISING);
+        digitalPinToInterrupt(IMU_INT);
+        attachInterrupt(digitalPinToInterrupt(IMU_INT), dmpDataReady, RISING);
         mpuIntStatus = mpu.getIntStatus();
+        Serial.print("Int status");
+        Serial.println(mpuIntStatus);
         dmpReady = true;
 
         packetSize = mpu.dmpGetFIFOPacketSize();
     }else{
-      DPRINT("IMU Initialization failed ");
-      DPRINTLN(devStatus);
+      Serial.print("IMU Initialization failed ");
+      Serial.println(devStatus);
     }
 
     return devStatus == 0 ? 0 : 1;
@@ -77,14 +68,14 @@ int UpdateIMU()
         if (mpu.dmpGetCurrentFIFOPacket(fifoBuffer))
         {
             mpu.dmpGetQuaternion(&quat, fifoBuffer);
-            DPRINT(F("quat "));
-            DPRINT(quat.x);
-            DPRINT(F(" "));
-            DPRINT(quat.y);
-            DPRINT(F(" "));
-            DPRINT(quat.z);
-            DPRINT(F(" "));
-            DPRINTLN(quat.w);
+            Serial.print(F("quat "));
+            Serial.print(quat.x);
+            Serial.print(F(" "));
+            Serial.print(quat.y);
+            Serial.print(F(" "));
+            Serial.print(quat.z);
+            Serial.print(F(" "));
+            Serial.println(quat.w);
             return 0;
         }
     }

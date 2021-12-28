@@ -20,7 +20,7 @@ public:
     static void Init();
     static bool PumpMilliliters(int milliliters); // ISR Support Up to 5ml
     static bool IsPumping() {return isPumping;}
-    static int GetMillilitersMicros(long micro_secs);
+    static int MicrosToMilliliters(long micro_secs);
     static void StopPump();
 
 

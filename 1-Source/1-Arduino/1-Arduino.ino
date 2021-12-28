@@ -1,4 +1,4 @@
-  #define DEBUG_IMU
+   #define DEBUG_IMU
 
 #include "PinLayout.h"
 #include "StepperDriver.h"
@@ -6,7 +6,7 @@
 #include "SensorDriver.h"
 #include "ISRHandler.h"
 #include "WaterTankManager.h"
-//#include "IMU.h"
+#include "IMU.h"
 
 int led = 0;
 
@@ -20,7 +20,8 @@ void setup()
   EngineDriver::Init();
   PumpDriver::Init();
   SensorDriver::Init();
-  //InitIMU();
+  WaterTankManager::Init();
+  InitIMU();
 }
 
 char serialCommandBuff[100];
@@ -32,6 +33,13 @@ bool processSerialCommand()
   if(strncmp(&serialCommandBuff[0], "f", 1) == 0)
   {
     retVal = StepperDriver::TurnFlap(atoi(&serialCommandBuff[1]));
+  }else if(strncmp(&serialCommandBuff[0], "c", 1) == 0)
+  {
+    int waterPumped = 0;
+    retVal = WaterTankManager::KillCurrentOperation(&waterPumped);
+    Serial.print("Water flow canceled. Pumped Water: ");
+    Serial.print(waterPumped);
+    Serial.println("ml.");
   }else if(strncmp(&serialCommandBuff[0], "e", 1) == 0)
   {
     retVal = EngineDriver::SetTargetPower(atoi(&serialCommandBuff[1]));
@@ -65,6 +73,7 @@ void loop()
 {
   EngineDriver::Update();
   SensorDriver::Update();
+  WaterTankManager::Update();
 
   while(Serial.available() > 0)
   {

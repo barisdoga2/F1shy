@@ -68,7 +68,7 @@ bool WaterTankManager::KillCurrentOperation(int* pumpedWater) // Probably not sa
         operationState = OPERATION_DONE;
         if(runningus != 0)
         {
-            *pumpedWater = PumpDriver::GetMillilitersMicros(runningus);
+            *pumpedWater = PumpDriver::MicrosToMilliliters(runningus);
         }
     }
 

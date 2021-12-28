@@ -16,9 +16,9 @@ bool PumpDriver::OnISR()
     return true;
 }
 
-int PumpDriver::GetMillilitersMicros(long micro_secs)
+int PumpDriver::MicrosToMilliliters(long micro_secs)
 {
-    return 0; // [TODO] too lazy atm to write this.
+    return 10; // [TODO] too lazy atm to write this.
 } 
 
 void PumpDriver::StopPump()

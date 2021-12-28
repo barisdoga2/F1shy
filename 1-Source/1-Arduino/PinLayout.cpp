@@ -15,8 +15,8 @@ Pin PinLayout::pinMap[NUMBER_OF_PINS_USED] = {
     {PRESSURE_SENS,     INPUT,    LOW},
     {LEAK_SENS,         INPUT,    LOW},
     {DHT11_SENS,        INPUT,    LOW},
-    {PUMP_ACT_R_SENS,   INPUT,    LOW},
-    {PUMP_ACT_H_SENS,   INPUT,    LOW},
+    {IMU_INT,           INPUT,    LOW},
+    {NOT_USED2,         INPUT,    LOW},
 };
 
 void PinLayout::Init()
