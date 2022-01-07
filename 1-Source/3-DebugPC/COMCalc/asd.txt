@@ -1,0 +1,12 @@
+#[RECT]	[NAME]	[X]	[Y]	[Width]	[Height] [Weight]	[Volume=0]  [xDiff=0]	  [yDiff=0]
+# All in millimeters
+# 1267 Mass
+# 2569 Volume
+# 1300 Extra
+# 200 Water Tanks
+R Prop 616 384 41 10 22 41 6 0
+R Flaps 697 373 47 10 20 35 0 0
+R Rear 696 384 119 10 121 434 20 0
+R Rear2 791 384 70 10 121 522 1 0
+R Mid 900 384 148 10 112 1160 0 0
+R Head 1012 384 76 10 77 392 -9 0
