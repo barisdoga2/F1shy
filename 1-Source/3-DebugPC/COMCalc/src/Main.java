@@ -41,7 +41,7 @@ public class Main extends JPanel implements MouseListener, MouseMotionListener, 
     private int currentMode = 0;
     private int buffer = 0;
     
-    private int totalFD = 0, totalMass = 0, totalVolume = 0, totalFY = 0, totalBFX = 0;
+    private int totalGraX = 0, totalMass = 0, totalVolume = 0, totalGraY = 0, totalBuoX = 0;
 
 	public Main() {
 		setBackground(Color.white);
@@ -53,15 +53,17 @@ public class Main extends JPanel implements MouseListener, MouseMotionListener, 
 		
 		// Read Part Info
 		try {
-			BufferedReader br = new BufferedReader(new FileReader("asd.txt"));
+			BufferedReader br = new BufferedReader(new FileReader("C:\\Users\\Baris\\Desktop\\Basliksiz2.csv"));
 
             String line;
             while ((line = br.readLine()) != null) {
             	if(line.startsWith("#")) {
             		comments.add(line.substring(1));
-            	}else if(line.startsWith("R")) {
-            		String[] tokens = line.split(" ");
-            		rects.add(new Rect(tokens[1], Integer.parseInt(tokens[2]), Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]), Integer.parseInt(tokens[5]), Integer.parseInt(tokens[6]), Integer.parseInt(tokens[7]), Integer.parseInt(tokens[8]), Integer.parseInt(tokens[9])));
+            	}else if(line.startsWith(",")) {
+            		String[] tokens = line.split(",");
+            		rects.add(new Rect(tokens[2], Integer.parseInt(tokens[3]), Integer.parseInt(tokens[4]), Integer.parseInt(tokens[5]), Integer.parseInt(tokens[6]),
+            						   Integer.parseInt(tokens[7]), Integer.parseInt(tokens[8]), Integer.parseInt(tokens[9]), Integer.parseInt(tokens[10]),
+            						   Integer.parseInt(tokens[11]), Integer.parseInt(tokens[12])));
             	}
             }
             br.close();
@@ -78,37 +80,52 @@ public class Main extends JPanel implements MouseListener, MouseMotionListener, 
         offScreenImg = offScreenImageDrawed.getGraphics();      
         offScreenImg.setColor(new Color(82, 82, 122));
         offScreenImg.fillRect(0, 0, d.width, d.height);
-        totalFD = 0;
-        totalFY = 0;
-        totalBFX = 0;
+        totalGraX = 0;
+        totalGraY = 0;
+        totalBuoX = 0;
         totalMass = 0;
         totalVolume = 0;
         
     	for(Rect r : rects) {
     		offScreenImg.setColor(Color.BLACK);
-    		offScreenImg.fillRect(r.x - r.width / 2, r.y - r.height / 2, r.width, r.height);
+    		offScreenImg.drawRect(r.x - r.width, r.y - r.height, r.width * 2, r.height * 2);
     		offScreenImg.setColor(new Color(255,100,30,100));
     		offScreenImg.drawString(r.name, (int) (r.x - g.getFontMetrics().getStringBounds(r.name, g).getWidth() / 2), r.y + (int)(g.getFontMetrics().getStringBounds(r.name, g).getHeight() / 3));
-
-    		totalFD += (r.x - SCREEN_WIDTH / 2) * r.weight;
-    		totalFY += (r.y - SCREEN_HEIGHT / 2) * r.weight;
-    		totalBFX += (r.x - SCREEN_WIDTH / 2 + r.fBuoyancyXDiff) * r.volume * waterDensity;
+    		
+        	// Draw Center
+        	offScreenImg.setColor(Color.RED);
+        	offScreenImg.fillOval(r.x - 4 / 2, r.y - 4 / 2, 4, 4);
+        	
+    		// Draw CoB
+        	if(r.volume != 0) {
+        		offScreenImg.setColor(Color.BLUE);
+            	offScreenImg.fillOval(r.x + r.fBuoyancyXDiff - 4 / 2, r.y + r.fBuoyancyYDiff - 4 / 2, 4, 4);
+        	}
+        	
+        	// Draw CoM
+        	offScreenImg.setColor(Color.CYAN);
+        	offScreenImg.fillOval(r.x + r.comXDiff - 4 / 2, r.y + r.comYDiff - 4 / 2, 4, 4);
+        	
+        	// Maths
+    		totalGraX += (r.x - SCREEN_WIDTH / 2 + r.comXDiff) * r.weight;
+    		totalGraY += (r.y - SCREEN_HEIGHT / 2 + r.comYDiff) * r.weight;
+    		totalBuoX += (r.x - SCREEN_WIDTH / 2 + r.fBuoyancyXDiff) * r.volume * waterDensity;
     		totalVolume += r.volume;
     		totalMass += r.weight;
     		
     	}
     	
-    	// Draw 
-    	offScreenImg.setColor(Color.cyan);
-    	offScreenImg.fillOval((totalFD / totalMass) + SCREEN_WIDTH / 2 - 5 / 2, (totalFY / totalMass) + SCREEN_HEIGHT / 2 - 5 / 2, 5, 5);
+    	// Draw CoM
+    	offScreenImg.setColor(Color.CYAN);
+    	offScreenImg.fillOval((totalGraX / totalMass) + SCREEN_WIDTH / 2 - 8 / 2, (totalGraY / totalMass) + SCREEN_HEIGHT / 2 - 8 / 2, 8, 8);
     	
     	// Draw Screen Center
     	offScreenImg.setColor(Color.RED);
-    	offScreenImg.fillOval(SCREEN_WIDTH / 2 - 5 / 2, SCREEN_HEIGHT / 2 - 5 / 2, 5, 5);
+    	offScreenImg.fillOval(SCREEN_WIDTH / 2 - 8 / 2, SCREEN_HEIGHT / 2 - 8 / 2, 8, 8);
     	
     	// Draw Buoyancy Center
     	offScreenImg.setColor(Color.BLUE);
-    	offScreenImg.fillOval(SCREEN_WIDTH / 2 - 5 / 2  + totalBFX / totalVolume, SCREEN_HEIGHT / 2 - 5 / 2, 5, 5);
+    	offScreenImg.fillOval(SCREEN_WIDTH / 2 - 8 / 2  + totalBuoX / totalVolume, SCREEN_HEIGHT / 2 - 8 / 2, 8, 8);
     	
     	// Draw Hovered Object Info
     	if(hover != null) {
@@ -124,10 +141,13 @@ public class Main extends JPanel implements MouseListener, MouseMotionListener, 
 
 		}
     	
+    	offScreenImg.setColor(Color.RED);
 		offScreenImg.drawString("" + (oldX - SCREEN_WIDTH / 2), 10, 10);
 		offScreenImg.drawString("" + (oldY - SCREEN_HEIGHT / 2), 10, 25);
 		offScreenImg.drawString("Total Mass   : " + totalMass, 10, 40);
 		offScreenImg.drawString("Total Volume : " + totalVolume, 10, 55);
+		offScreenImg.drawString("CoM : " + ((float)totalGraX / totalMass) + "," + (totalGraY / totalMass), 10, 70);
+		offScreenImg.drawString("CoB : " + ((float)totalBuoX / totalVolume) + "," + (0), 10, 85);
         g.drawImage(offScreenImageDrawed, 0, 0, null);
         
     }
@@ -192,6 +212,7 @@ public class Main extends JPanel implements MouseListener, MouseMotionListener, 
 				
 			case '0': case '1': case '2': case '3': case '4': case '5': case '6': case '7': case '8': case '9':
 				buffer = Integer.parseInt(buffer + "" + e.getKeyChar());
+				System.out.println("buffering");
 				break;
 							
 			default:
@@ -235,12 +256,12 @@ public class Main extends JPanel implements MouseListener, MouseMotionListener, 
 
 	public void windowClosing(WindowEvent e) {
 		try {
-			FileWriter wr = new FileWriter(new File("asdo.txt"));
+			FileWriter wr = new FileWriter(new File("C:\\Users\\Baris\\Desktop\\Basliksiz22.csv"));
 			for(String c : comments) {
 				wr.write("#" + c + "\n");
 			}
 			for(Rect r : rects) {
-				wr.write("R " + r.name + " " + r.x + " " + r.y + " " + r.width + " " + r.height + " " + r.weight + " " + r.volume + " " + r.fBuoyancyXDiff + " " + r.fBuoyancyYDiff + "\n");
+				wr.write(",R," + r.name + "," + r.x + "," + r.y + "," + r.width + "," + r.height + "," + r.weight + "," + r.volume + "," + r.fBuoyancyXDiff + "," + r.fBuoyancyYDiff + "," + r.comXDiff + "," + r.comYDiff + "\n");
 			}
 			wr.close();
 
